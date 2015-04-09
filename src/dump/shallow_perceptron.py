@@ -143,6 +143,6 @@ if __name__ == "__main__":
 
     #writing kaggle submission
     with open("../data/perceptron-dummy.csv","wb") as outfile:
-        outfile.write('"id","sentiment"'+"\n")
+        outfile.write('"id"\t"sentiment"'+"\n")
         for p in sorted(preds):
-            outfile.write("%s,%s\n"%(p[0],p[1]))
+            outfile.write("%s\t%s\n"%(p[0],p[1]))

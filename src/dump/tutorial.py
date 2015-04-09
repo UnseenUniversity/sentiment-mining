@@ -1,5 +1,3 @@
-#!/bin
-
 __author__ = 'alexei'
 
 
