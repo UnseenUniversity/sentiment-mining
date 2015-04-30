@@ -20,13 +20,13 @@ class StanfordNLP:
 
 def _test():
     nlp = StanfordNLP()
-    result = nlp.parse("michael jackson has been a juicy soap opera and I don't like it .")
+    result = nlp.parse("Keneddt hasn't been killed. ")#She doesn't look very beautiful and charming but she is gorgeous.")
     #result = nlp.parse("I strongly believe it was very good however I wasn't impressed.")
     pprint(result)
 
-    from nltk.tree import Tree
-    tree = Tree.parse(result['sentences'][0]['parsetree'])
-    pprint(tree)
+    # from nltk.tree import Tree
+    # tree = Tree.parse(result['sentences'][0]['parsetree'])
+    # pprint(tree)
 
 if __name__ == "__main__":
     _test()

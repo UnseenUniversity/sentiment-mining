@@ -99,6 +99,13 @@ class Parser():
             self.parse_result(item, result)
 
 
+    def parse_review_simple(self, review):
+        review = self.remove_insanity(review)
+        review = self.isolate_delims(review)
+        review = review.split()
+        return review
+
+
     def parse_review(self, review):
 
         review = self.remove_insanity(review)
@@ -116,7 +123,8 @@ class Parser():
                 self.parse_result(item, result)
         except Exception as e:
             item["text"] = self.parse_dummy(review)
-            pprint("awkard")
+            pprint("stanford parser fail")
+            print review
 
         return item
 
@@ -128,11 +136,12 @@ class Parser():
         return text
 
     def remove_markup(self, raw_text):
-        string = re.sub(r"<(.*?)>", "", raw_text.strip())
+        string = re.sub(r"<(.*?)>", " ", raw_text.strip())
         return string
 
     def isolate_delims(self, text):
-        text = re.sub(r"\.|\?|!|,|:|;", " . ", text)
+        text = re.sub(r",", " , ", text)
+        text = re.sub(r"\.|\?|!|:|;", " . ", text)
         text = re.sub(r"\(", " ( ", text)
         text = re.sub(r"\)", " ) ", text)
         return text

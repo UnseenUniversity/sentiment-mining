@@ -90,34 +90,34 @@ def parse_parser_results(text):
             for s in WORD_PATTERN.findall(line):
                 sentence['words'].append(parse_bracketed(s))
             state = STATE_TREE
-        
+
         elif state == STATE_TREE:
             if len(line) == 0:
                 state = STATE_DEPENDENCY
-                sentence['parsetree'] = " ".join(sentence['parsetree'])
-            else:
-                sentence['parsetree'].append(line)
-        
+                # sentence['parsetree'] = " ".join(sentence['parsetree'])
+            # else:
+                # sentence['parsetree'].append(line)
+
         elif state == STATE_DEPENDENCY:
             if len(line) == 0:
                 state = STATE_COREFERENCE
-            else:
-                split_entry = re.split("\(|, ", line[:-1])
-                if len(split_entry) == 3:
-                    rel, left, right = map(lambda x: remove_id(x), split_entry)
-                    sentence['dependencies'].append(tuple([rel,left,right]))
-        
-        elif state == STATE_COREFERENCE:
-            if "Coreference set" in line:
-                if 'coref' not in results:
-                    results['coref'] = []
-                coref_set = []
-                results['coref'].append(coref_set)
-            else:
-                for src_i, src_pos, src_l, src_r, sink_i, sink_pos, sink_l, sink_r, src_word, sink_word in CR_PATTERN.findall(line):
-                    src_i, src_pos, src_l, src_r = int(src_i)-1, int(src_pos)-1, int(src_l)-1, int(src_r)-1
-                    sink_i, sink_pos, sink_l, sink_r = int(sink_i)-1, int(sink_pos)-1, int(sink_l)-1, int(sink_r)-1
-                    coref_set.append(((src_word, src_i, src_pos, src_l, src_r), (sink_word, sink_i, sink_pos, sink_l, sink_r)))
+            # else:
+            #     split_entry = re.split("\(|, ", line[:-1])
+            #     if len(split_entry) == 3:
+            #         rel, left, right = map(lambda x: remove_id(x), split_entry)
+            #         sentence['dependencies'].append(tuple([rel,left,right]))
+
+        # elif state == STATE_COREFERENCE:
+        #     if "Coreference set" in line:
+        #         if 'coref' not in results:
+        #             results['coref'] = []
+        #         coref_set = []
+        #         results['coref'].append(coref_set)
+        #     else:
+        #         for src_i, src_pos, src_l, src_r, sink_i, sink_pos, sink_l, sink_r, src_word, sink_word in CR_PATTERN.findall(line):
+        #             src_i, src_pos, src_l, src_r = int(src_i)-1, int(src_pos)-1, int(src_l)-1, int(src_r)-1
+        #             sink_i, sink_pos, sink_l, sink_r = int(sink_i)-1, int(sink_pos)-1, int(sink_l)-1, int(sink_r)-1
+        #             coref_set.append(((src_word, src_i, src_pos, src_l, src_r), (sink_word, sink_i, sink_pos, sink_l, sink_r)))
     
     return results
 
@@ -158,6 +158,7 @@ class StanfordCoreNLP(object):
         
         # spawn the server
         start_corenlp = "%s -Xmx1800m -cp %s %s %s" % (java_path, ':'.join(jars), classname, props)
+
         if VERBOSE: 
             logger.debug(start_corenlp)
         self.corenlp = pexpect.spawn(start_corenlp)
