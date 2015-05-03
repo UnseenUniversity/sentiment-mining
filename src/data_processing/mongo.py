@@ -12,6 +12,9 @@ class MongoORM():
     def get_collection(self, name):
         return self.db[name].find()
 
+    def get_collection_large(self, name):
+        return self.db[name].find(no_cursor_timeout=True).batch_size(500)
+
     def get_item(self, collection, item):
         return self.db[collection].find(item)
 

@@ -213,6 +213,23 @@ def build_training_set():
 
     # print net.activateOnDataset(ds)
 
+def test_ann():
+
+    net = NetworkReader.readFrom('../data/single_phrase_nn.xml')
+    model = w2vec_model()
+
+    vector = np.zeros(100, dtype="float32")
+    vector += model["great"]
+    vector += model["movie"]
+
+    ds = [list(vector)]
+
+    ds2 = SupervisedDataSet(100, 1)
+    ds2.addSample(tuple(ds), (4,))
+    print net.activateOnDataset(ds2)
+
+
+
 
 def curiosity_query():
 
@@ -352,8 +369,8 @@ def main():
     # augument_dataset_with_negation()
     # build_rotten_dataset()
     # build_training_set()
-    curiosity_query()
-
+    # curiosity_query()
+    test_ann()
 
 if __name__ == "__main__":
     main()

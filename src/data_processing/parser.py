@@ -1,6 +1,7 @@
 
 
 import re
+import nltk
 from nltk import data, corpus
 from nltk.stem import WordNetLemmatizer as wnl
 
@@ -19,7 +20,6 @@ class Parser():
 
         self.delims_patterns = [r".", r",", r"?", r"!", r":", r";"]
         self.delims = {".", ',', "!", ":", ";"}
-
 
     def parse_dependencies(self, dependencies):
 
@@ -105,6 +105,46 @@ class Parser():
         review = review.split()
         return review
 
+    def lemmatize(self, word, pos):
+
+        if pos == "j" or pos == "r":
+            return self.wnl.lemmatize(word, "a")
+
+        if pos == "n":
+            return self.wnl.lemmatize(word, "n")
+
+        if pos == "v":
+            return self.wnl.lemmatize(word, "v")
+
+        return word
+
+    def parse_carefully(self, text):
+
+        sentences = []
+        text = self.remove_insanity(text)
+        text = self.remove_delims(text)
+        text = text.split(".")
+
+        for phrase in text:
+
+            tokens = []
+            sentence = nltk.word_tokenize(phrase)
+
+            for token in sentence:
+                if len(token) == 1 or token == "the":
+                    continue
+
+                pos = nltk.pos_tag([token])[0][1][0].lower()
+                token = self.lemmatize(token, pos)
+                tokens.append(token)
+
+            if len(tokens) == 0:
+                continue
+
+            sentences.append(tokens)
+
+        return sentences
+
 
     def parse_review(self, review):
 
@@ -130,14 +170,19 @@ class Parser():
 
     def remove_insanity(self, text):
         text = re.sub(r'[^\x00-\x7F]+', ' ', text)
-        text = re.sub(r"\"|\\|\*|&|-|_|/|~|`|#", " ", text)
         text = self.remove_markup(text)
+        text = re.sub(r"\"|\\|\*|&|-|_|/|~|`|#|@", " ", text)
         text = text.lower()
         return text
 
     def remove_markup(self, raw_text):
         string = re.sub(r"<(.*?)>", " ", raw_text.strip())
         return string
+
+    def remove_delims(self, text):
+        text = re.sub(r",|\(|\)", "  ", text)
+        text = re.sub(r"\.|\?|!|:|;", " . ", text)
+        return text
 
     def isolate_delims(self, text):
         text = re.sub(r",", " , ", text)

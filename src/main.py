@@ -7,12 +7,12 @@ def prepare_data():
 
     # dp.dump_rotten_dataset()
     # dp.dump_rotten_unigrams()
-    dp.dump_unigrams_from_clusters()
+    # dp.dump_unigrams_from_clusters()
     # dp.dump_imdb_dataset()
     # dp.dump_imdb_dataset_unlabeled()
     # wv_train.build_corpus()
-
-
+    # dp.build_imdb_corpus()
+    dp.build_rotten_corpus()
 
 
 

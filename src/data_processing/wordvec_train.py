@@ -76,7 +76,6 @@ def w2vec_train(sentences):
     model.save('./w2v_for_rotten.model')
     t.measure("word2vec model built in: ")
 
-
 def w2vec_model():
 
     model = gensim.models.Word2Vec.load('./w2v_for_rotten.model')

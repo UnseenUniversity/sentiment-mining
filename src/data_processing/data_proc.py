@@ -215,3 +215,86 @@ def dump_imdb_dataset_unlabeled():
     mongo = MongoORM("imdb")
     dump_corpus_imdb_unlabeled(mongo, "../data/unlabeledTrainData.tsv", "unlabeled")
     dump_corpus_imdb_unlabeled(mongo, "../data/testData.tsv", "test")
+
+
+####################################################
+
+import util
+
+def parse_imdb_review(parser, mongo, collection, item):
+
+    _id = re.sub("\"", "", item["id"])
+    sentences = parser.parse_carefully(item["review"])
+
+    result = {"_id": _id,
+              "sentences": sentences}
+
+    if "sentiment" in item:
+        result["label"] = item["sentiment"]
+
+    mongo.upsert_item(collection, result)
+
+
+def dump_imdb2(parser, mongo, path, collection):
+
+    t = util.Timer()
+    map_fun = lambda item: parse_imdb_review(parser, mongo, collection, item)
+    parse_csv(path, map_fun)
+    t.measure(collection + " corpus built in : ")
+
+
+def build_imdb_corpus():
+
+    mongo = MongoORM("corpus")
+    parser = p.Parser()
+    dump_imdb2(parser, mongo, "../data/labeledTrainData.tsv", "labeled")
+    dump_imdb2(parser, mongo, "../data/unlabeledTrainData.tsv", "unlabeled")
+    dump_imdb2(parser, mongo, "../data/testData.tsv", "test")
+
+
+prev_sent_id = -1
+
+
+def parse_rotten_sentence(parser, mongo, collection, item):
+
+    global prev_sent_id
+    sent_id = int(item["SentenceId"])
+
+    if sent_id == prev_sent_id:
+        return
+
+    prev_sent_id = sent_id
+
+    if len(item["Phrase"]) == 0:
+        return
+
+    _id       = int(item["PhraseId"])
+    sentences = parser.parse_carefully(item["Phrase"])
+
+    result = {"_id": _id,
+              "sentences": sentences}
+
+    if "Sentiment" in item:
+        label = int(item["Sentiment"])
+        result["label"] = label
+
+    mongo.upsert_item(collection, result)
+
+
+def dump_rotten2(parser, mongo, path, collection):
+
+    global prev_sent_id
+    prev_sent_id = -1
+
+    t = util.Timer()
+    map_fun = lambda item: parse_rotten_sentence(parser, mongo, collection, item)
+    parse_csv(path, map_fun)
+    t.measure(collection + " corpus built in: ")
+
+
+def build_rotten_corpus():
+
+    mongo = MongoORM("corpus")
+    parser = p.Parser()
+    dump_rotten2(parser, mongo, "../data/rotten_train.tsv", "rotten_train")
+    dump_rotten2(parser, mongo, "../data/rotten_test.tsv", "rotten_test")
